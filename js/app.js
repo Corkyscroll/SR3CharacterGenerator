@@ -503,7 +503,7 @@
 }
 }
 
-  function validateStep(stepIndex) {
+  /*function validateStep(stepIndex) {
   switch (stepIndex) {
   case 0: return validatePriorities();          // Step 1: Priority System
   case 1: return validateRace();                // Step 2: Race
@@ -515,7 +515,7 @@
   case 7: return validateFinalTouches();        // Step 8: Final Touches
   default: return true;
 }
-}
+}*/
 
   // Race step
   function initRaceStep() {
