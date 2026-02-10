@@ -257,25 +257,25 @@
       </div>
 
       <h3>Combat Skills</h3>
-      <div class="skill-list" id="combat-skills"></div>
+      <div class="skill-table-grid" id="combat-skills"></div>
 
       <h3 id="magical-skills-header">Magical Skills</h3>
-      <div class="skill-list" id="magical-skills"></div>
+      <div class="skill-table-grid" id="magical-skills"></div>
 
       <h3>Physical Skills</h3>
-      <div class="skill-list" id="physical-skills"></div>
+      <div class="skill-table-grid" id="physical-skills"></div>
 
       <h3>Social Skills</h3>
-      <div class="skill-list" id="social-skills"></div>
+      <div class="skill-table-grid" id="social-skills"></div>
 
       <h3>Technical Skills</h3>
-      <div class="skill-list" id="technical-skills"></div>
+      <div class="skill-table-grid" id="technical-skills"></div>
 
       <h3>Vehicle Skills</h3>
-      <div class="skill-list" id="vehicle-skills"></div>
+      <div class="skill-table-grid" id="vehicle-skills"></div>
 
       <h3>Build/Repair Skills</h3>
-      <div class="skill-list" id="buildRepair-skills"></div>
+      <div class="skill-table-grid" id="buildRepair-skills"></div>
 
       <h3>Knowledge Skills</h3>
       <div class="info-box">
@@ -285,17 +285,14 @@
       <div class="form-group">
         <button class="btn btn-secondary" onclick="addKnowledgeSkill()">+ Add Knowledge Skill</button>
       </div>
-      <div id="knowledge-skills" class="skill-list"></div>
+      <div id="knowledge-skills" class="skill-table-grid"></div>
 
       <h3>Language Skills</h3>
       <div class="info-box">
-        <strong>Language Skills:</strong> You receive free Language Skill points equal to your Intelligence × 1.5 (rounded down). All characters start with their native language at the maximum rating.<br>
+        <strong>Language Skills:</strong> You receive free Language Skill points equal to your Intelligence × 1.5 (rounded down).<br>
+        <span style="color: var(--accent-secondary); font-weight: bold;">You can also use Knowledge Skill points for languages if needed.</span><br>
         <span style="color: var(--accent-primary); font-weight: bold;">Available: <span id="language-points-display">0</span> points</span>
       </div>
-      <div class="form-group">
-        <button class="btn btn-secondary" onclick="addLanguageSkill()">+ Add Language Skill</button>
-      </div>
-      <div id="language-skills" class="skill-list"></div>
 
       <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
       <button class="btn" onclick="nextStep()">Continue to Resources →</button>
