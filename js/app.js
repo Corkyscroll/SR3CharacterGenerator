@@ -482,13 +482,19 @@
   if (step === 8) generateCharacterSheet();
 }
 
-  function nextStep() {
+ /* function nextStep() {
   const current = currentStep; // assume you track this globally
   if (!validateStep(current)) {
   return; // block navigation if invalid
 }
   showStep(current + 1);
-}
+}*/
+
+  function nextStep() {
+    if(currentStep < 8) {
+      showStep(currentStep + 1);
+    }
+  }
 
 
   function prevStep() {
