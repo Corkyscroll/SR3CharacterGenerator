@@ -1,4 +1,4 @@
-# [Shadowrun 3E Character Geberator](https://corkyscroll.github.io/SR3CharacterGenerator/)
+# [Shadowrun 3E Character Generator](https://corkyscroll.github.io/SR3CharacterGenerator/)
 This repository contains the source code for my 3rd Edition Shadowrun character generator
 
 # License
