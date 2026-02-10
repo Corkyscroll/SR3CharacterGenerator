@@ -1,16 +1,16 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js" lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>Shadowrun 3E Character Generator</title>
   <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
+  <meta name="description" content="3rd Edition Shadowrun character generator using the priority system">
 
   <meta property="og:title" content="">
   <meta property="og:type" content="">
-  <meta property="og:url" content="">
+  <meta property="og:url" content="https://corkyscroll.github.io/SR3CharacterGenerator/">
   <meta property="og:image" content="">
   <meta property="og:image:alt" content="">
 
@@ -23,11 +23,612 @@
 </head>
 
 <body>
+<header>
+  <div class="container">
+    <h1>⚡ SHADOWRUN 3E CHARACTER GENERATOR ⚡</h1>
+    <p class="subtitle">Step-by-step character creation for Shadowrun Third Edition</p>
+  </div>
+</header>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+<div class="container">
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showStep(0)">1. Priorities</button>
+    <button class="tab-btn" onclick="showStep(1)">2. Race</button>
+    <button class="tab-btn" onclick="showStep(2)">3. Magic</button>
+    <button class="tab-btn" onclick="showStep(3)">4. Attributes</button>
+    <button class="tab-btn" onclick="showStep(4)">5. Skills</button>
+    <button class="tab-btn" onclick="showStep(5)">6. Resources</button>
+    <button class="tab-btn" onclick="showStep(6)">7. Edges & Flaws</button>
+    <button class="tab-btn" onclick="showStep(7)">8. Final Touches</button>
+    <button class="tab-btn" onclick="showStep(8)">9. Character Sheet</button>
+  </nav>
 
+  <!-- Step 0: Priority System -->
+  <div class="step-content active" id="step-0">
+    <div class="card">
+      <h2>Step 1: Priority System</h2>
+      <div class="info-box">
+        <strong>How it works:</strong> Assign priorities A through E to five categories. Each priority can only be used once. Priority A is the strongest, E is the weakest.
+      </div>
+
+      <div class="priority-grid">
+        <div class="priority-row">
+          <div class="priority-label">A</div>
+          <div class="priority-option disabled" data-priority="A" data-category="race">
+            <div class="title">Race</div>
+            <div class="desc">Not available</div>
+          </div>
+          <div class="priority-option" data-priority="A" data-category="magic" onclick="selectPriority('A', 'magic', this)">
+            <div class="title">Magic</div>
+            <div class="desc">Full Magician: Magic 6</div>
+          </div>
+          <div class="priority-option" data-priority="A" data-category="attributes" onclick="selectPriority('A', 'attributes', this)">
+            <div class="title">Attributes</div>
+            <div class="desc">30 Attribute Points</div>
+          </div>
+          <div class="priority-option" data-priority="A" data-category="skills" onclick="selectPriority('A', 'skills', this)">
+            <div class="title">Skills</div>
+            <div class="desc">50 Skill Points</div>
+          </div>
+          <div class="priority-option" data-priority="A" data-category="resources" onclick="selectPriority('A', 'resources', this)">
+            <div class="title">Resources</div>
+            <div class="desc">1,000,000¥</div>
+          </div>
+        </div>
+
+        <div class="priority-row">
+          <div class="priority-label">B</div>
+          <div class="priority-option disabled" data-priority="B" data-category="race">
+            <div class="title">Race</div>
+            <div class="desc">Not available</div>
+          </div>
+          <div class="priority-option" data-priority="B" data-category="magic" onclick="selectPriority('B', 'magic', this)">
+            <div class="title">Magic</div>
+            <div class="desc">Adept or Aspected Magician: Magic 6</div>
+          </div>
+          <div class="priority-option" data-priority="B" data-category="attributes" onclick="selectPriority('B', 'attributes', this)">
+            <div class="title">Attributes</div>
+            <div class="desc">27 Attribute Points</div>
+          </div>
+          <div class="priority-option" data-priority="B" data-category="skills" onclick="selectPriority('B', 'skills', this)">
+            <div class="title">Skills</div>
+            <div class="desc">40 Skill Points</div>
+          </div>
+          <div class="priority-option" data-priority="B" data-category="resources" onclick="selectPriority('B', 'resources', this)">
+            <div class="title">Resources</div>
+            <div class="desc">400,000¥</div>
+          </div>
+        </div>
+
+        <div class="priority-row">
+          <div class="priority-label">C</div>
+          <div class="priority-option" data-priority="C" data-category="race" onclick="selectPriority('C', 'race', this)">
+            <div class="title">Race</div>
+            <div class="desc">Elf, Troll</div>
+          </div>
+          <div class="priority-option" data-priority="C" data-category="magic" onclick="selectPriority('C', 'magic', this)">
+            <div class="title">Magic</div>
+            <div class="desc">Mundane (No magic)</div>
+          </div>
+          <div class="priority-option" data-priority="C" data-category="attributes" onclick="selectPriority('C', 'attributes', this)">
+            <div class="title">Attributes</div>
+            <div class="desc">24 Attribute Points</div>
+          </div>
+          <div class="priority-option" data-priority="C" data-category="skills" onclick="selectPriority('C', 'skills', this)">
+            <div class="title">Skills</div>
+            <div class="desc">34 Skill Points</div>
+          </div>
+          <div class="priority-option" data-priority="C" data-category="resources" onclick="selectPriority('C', 'resources', this)">
+            <div class="title">Resources</div>
+            <div class="desc">90,000¥</div>
+          </div>
+        </div>
+
+        <div class="priority-row">
+          <div class="priority-label">D</div>
+          <div class="priority-option" data-priority="D" data-category="race" onclick="selectPriority('D', 'race', this)">
+            <div class="title">Race</div>
+            <div class="desc">Dwarf, Ork</div>
+          </div>
+          <div class="priority-option" data-priority="D" data-category="magic" onclick="selectPriority('D', 'magic', this)">
+            <div class="title">Magic</div>
+            <div class="desc">Mundane (No magic)</div>
+          </div>
+          <div class="priority-option" data-priority="D" data-category="attributes" onclick="selectPriority('D', 'attributes', this)">
+            <div class="title">Attributes</div>
+            <div class="desc">21 Attribute Points</div>
+          </div>
+          <div class="priority-option" data-priority="D" data-category="skills" onclick="selectPriority('D', 'skills', this)">
+            <div class="title">Skills</div>
+            <div class="desc">30 Skill Points</div>
+          </div>
+          <div class="priority-option" data-priority="D" data-category="resources" onclick="selectPriority('D', 'resources', this)">
+            <div class="title">Resources</div>
+            <div class="desc">20,000¥</div>
+          </div>
+        </div>
+
+        <div class="priority-row">
+          <div class="priority-label">E</div>
+          <div class="priority-option" data-priority="E" data-category="race" onclick="selectPriority('E', 'race', this)">
+            <div class="title">Race</div>
+            <div class="desc">Human only</div>
+          </div>
+          <div class="priority-option" data-priority="E" data-category="magic" onclick="selectPriority('E', 'magic', this)">
+            <div class="title">Magic</div>
+            <div class="desc">Mundane (No magic)</div>
+          </div>
+          <div class="priority-option" data-priority="E" data-category="attributes" onclick="selectPriority('E', 'attributes', this)">
+            <div class="title">Attributes</div>
+            <div class="desc">18 Attribute Points</div>
+          </div>
+          <div class="priority-option" data-priority="E" data-category="skills" onclick="selectPriority('E', 'skills', this)">
+            <div class="title">Skills</div>
+            <div class="desc">27 Skill Points</div>
+          </div>
+          <div class="priority-option" data-priority="E" data-category="resources" onclick="selectPriority('E', 'resources', this)">
+            <div class="title">Resources</div>
+            <div class="desc">5,000¥</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="nextStep()">Continue to Race Selection →</button>
+    </div>
+  </div>
+
+  <!-- Step 1: Race -->
+  <div class="step-content" id="step-1">
+    <div class="card">
+      <h2>Step 2: Choose Your Race</h2>
+      <div class="info-box">
+        <strong>Available races based on your priority:</strong> <span id="available-races"></span>
+      </div>
+
+      <div class="selection-grid" id="race-grid">
+        <!-- Dynamically populated -->
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Magic →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Magic -->
+  <div class="step-content" id="step-2">
+    <div class="card">
+      <h2>Step 3: Magic & Traditions</h2>
+      <div class="info-box">
+        <strong>Magic Priority:</strong> <span id="magic-priority-display"></span>
+      </div>
+
+      <div id="magic-selection">
+        <!-- Dynamically populated -->
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Attributes →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Attributes -->
+  <div class="step-content" id="step-3">
+    <div class="card">
+      <h2>Step 4: Assign Attributes</h2>
+      <div class="points-display">
+        Attribute Points Remaining: <span id="attr-points-remaining">0</span>
+      </div>
+
+      <div class="attr-grid" id="attributes-grid">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="derived-stats">
+        <div class="derived-stat">
+          <div class="derived-stat-value" id="reaction-display">0</div>
+          <div class="derived-stat-label">Reaction</div>
+        </div>
+        <div class="derived-stat">
+          <div class="derived-stat-value" id="essence-display">6.0</div>
+          <div class="derived-stat-label">Essence</div>
+        </div>
+        <div class="derived-stat">
+          <div class="derived-stat-value" id="initiative-display">0</div>
+          <div class="derived-stat-label">Initiative (Base)</div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Skills →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Skills -->
+  <div class="step-content" id="step-4">
+    <div class="card">
+      <h2>Step 5: Assign Skills</h2>
+      <div class="points-display">
+        Skill Points Remaining: <span id="skill-points-remaining">0</span>
+      </div>
+
+      <div class="info-box">
+        <strong>Skill Point Costs:</strong> Skills cost 1 point per rating level up to your linked attribute value. Beyond that, they cost 2 points per level. Maximum starting rating: 6<br>
+        <strong>Specializations:</strong> Add +2 dice when the specialization applies (no point cost, but skill must be rated)
+      </div>
+
+      <h3>Combat Skills</h3>
+      <div class="skill-list" id="combat-skills"></div>
+
+      <h3 id="magical-skills-header">Magical Skills</h3>
+      <div class="skill-list" id="magical-skills"></div>
+
+      <h3>Physical Skills</h3>
+      <div class="skill-list" id="physical-skills"></div>
+
+      <h3>Social Skills</h3>
+      <div class="skill-list" id="social-skills"></div>
+
+      <h3>Technical Skills</h3>
+      <div class="skill-list" id="technical-skills"></div>
+
+      <h3>Vehicle Skills</h3>
+      <div class="skill-list" id="vehicle-skills"></div>
+
+      <h3>Build/Repair Skills</h3>
+      <div class="skill-list" id="buildRepair-skills"></div>
+
+      <h3>Knowledge Skills</h3>
+      <div class="info-box">
+        <strong>Knowledge Skills:</strong> You receive free Knowledge Skill points equal to your Intelligence × 5. These represent your character's education and life experience.<br>
+        <span style="color: var(--accent-primary); font-weight: bold;">Available: <span id="knowledge-points-display">0</span> points</span>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addKnowledgeSkill()">+ Add Knowledge Skill</button>
+      </div>
+      <div id="knowledge-skills" class="skill-list"></div>
+
+      <h3>Language Skills</h3>
+      <div class="info-box">
+        <strong>Language Skills:</strong> You receive free Language Skill points equal to your Intelligence × 1.5 (rounded down). All characters start with their native language at the maximum rating.<br>
+        <span style="color: var(--accent-primary); font-weight: bold;">Available: <span id="language-points-display">0</span> points</span>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addLanguageSkill()">+ Add Language Skill</button>
+      </div>
+      <div id="language-skills" class="skill-list"></div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Resources →</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Resources -->
+  <div class="step-content" id="step-5">
+    <div class="card">
+      <h2>Step 6: Resources & Equipment</h2>
+      <div class="points-display">
+        Nuyen Remaining: <span id="nuyen-remaining">0</span>¥
+      </div>
+
+      <h3>Cyberware/Bioware</h3>
+      <div class="info-box">
+        <strong>Essence Cost:</strong> Cyberware reduces your Essence. When Essence reaches 0, the character dies. Most cyberware has an Essence cost between 0.1 and 2.0.
+      </div>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addCyberware()">+ Add Cyberware</button>
+        <button class="btn btn-secondary" onclick="addQuickCyberware()">⚡ Quick Add Common Cyberware</button>
+      </div>
+      <div id="cyberware-list" class="list-container"></div>
+
+      <h3>Weapons</h3>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addWeapon()">+ Add Weapon</button>
+        <button class="btn btn-secondary" onclick="addQuickWeapon()">⚡ Quick Add Common Weapons</button>
+      </div>
+      <div id="weapons-list" class="list-container"></div>
+
+      <h3>Armor</h3>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addArmor()">+ Add Armor</button>
+        <button class="btn btn-secondary" onclick="addQuickArmor()">⚡ Quick Add Common Armor</button>
+      </div>
+      <div id="armor-list" class="list-container"></div>
+
+      <h3>Equipment</h3>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addEquipment()">+ Add Equipment</button>
+      </div>
+      <div id="equipment-list" class="list-container"></div>
+
+      <h3>Vehicles</h3>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addVehicle()">+ Add Vehicle</button>
+      </div>
+      <div id="vehicles-list" class="list-container"></div>
+
+      <h3>Contacts</h3>
+      <div class="form-group">
+        <button class="btn btn-secondary" onclick="addContact()">+ Add Contact</button>
+      </div>
+      <div id="contacts-list" class="list-container"></div>
+
+      <h3>Lifestyle</h3>
+      <div class="info-box">
+        <strong>Lifestyle:</strong> Your lifestyle determines your monthly living expenses. You must pay this at the start of each game month.
+      </div>
+      <div class="form-group">
+        <label>Choose Lifestyle</label>
+        <select id="lifestyle-select" onchange="selectLifestyle()">
+          <option value="">-- Select Lifestyle --</option>
+          <option value="street">Street (0¥/month)</option>
+          <option value="squatter">Squatter (500¥/month)</option>
+          <option value="low">Low (1,000¥/month)</option>
+          <option value="middle">Middle (5,000¥/month)</option>
+          <option value="high">High (10,000¥/month)</option>
+          <option value="luxury">Luxury (100,000¥/month)</option>
+        </select>
+      </div>
+      <div id="lifestyle-description" style="margin-top: 10px; padding: 15px; background: var(--bg-input); border-radius: 6px; display: none;">
+        <p id="lifestyle-desc-text" style="color: var(--text-secondary);"></p>
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Edges & Flaws →</button>
+    </div>
+  </div>
+
+  <!-- Step 6: Edges & Flaws -->
+  <div class="step-content" id="step-6">
+    <div class="card">
+      <h2>Step 7: Edges & Flaws</h2>
+      <div class="points-display">
+        Edge/Flaw Points: <span id="edge-flaw-points">0</span> (Max +10 from Flaws, Max -6 total)
+      </div>
+
+      <div class="info-box">
+        <strong>Balance:</strong> Positive Edges cost points. Negative Flaws give points. You can take up to 10 points of Flaws, but your total balance cannot exceed -6.
+      </div>
+
+      <h3>Available Edges (Cost Points)</h3>
+      <div id="edges-list" class="list-container">
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Ambidexterity</strong> - No penalty for off-hand use
+          </div>
+          <div class="edge-flaw-cost">Cost: 2</div>
+          <button class="btn btn-secondary" onclick="addEdge('Ambidexterity', 2)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Combat Monster</strong> - +1 die to combat skills
+          </div>
+          <div class="edge-flaw-cost">Cost: 3</div>
+          <button class="btn btn-secondary" onclick="addEdge('Combat Monster', 3)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Danger Sense</strong> - Detect danger with Magic roll (TN 6)
+          </div>
+          <div class="edge-flaw-cost">Cost: 3</div>
+          <button class="btn btn-secondary" onclick="addEdge('Danger Sense', 3)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>High Pain Tolerance</strong> - Ignore wound penalties
+          </div>
+          <div class="edge-flaw-cost">Cost: 3</div>
+          <button class="btn btn-secondary" onclick="addEdge('High Pain Tolerance', 3)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Photographic Memory</strong> - Perfect recall
+          </div>
+          <div class="edge-flaw-cost">Cost: 2</div>
+          <button class="btn btn-secondary" onclick="addEdge('Photographic Memory', 2)">Add</button>
+        </div>
+      </div>
+
+      <h3>Available Flaws (Grant Points)</h3>
+      <div id="flaws-list" class="list-container">
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Addiction</strong> - Addicted to substance
+          </div>
+          <div class="edge-flaw-cost">Grant: +3</div>
+          <button class="btn btn-secondary" onclick="addFlaw('Addiction', 3)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Allergy (Common)</strong> - Allergic to common substance
+          </div>
+          <div class="edge-flaw-cost">Grant: +2</div>
+          <button class="btn btn-secondary" onclick="addFlaw('Allergy (Common)', 2)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Bad Luck</strong> - Reduced karma pool
+          </div>
+          <div class="edge-flaw-cost">Grant: +4</div>
+          <button class="btn btn-secondary" onclick="addFlaw('Bad Luck', 4)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Code of Honor</strong> - Must follow personal code
+          </div>
+          <div class="edge-flaw-cost">Grant: +2</div>
+          <button class="btn btn-secondary" onclick="addFlaw('Code of Honor', 2)">Add</button>
+        </div>
+        <div class="edge-flaw-item">
+          <div class="edge-flaw-name">
+            <strong>Enemy</strong> - Powerful enemy seeks you
+          </div>
+          <div class="edge-flaw-cost">Grant: +3</div>
+          <button class="btn btn-secondary" onclick="addFlaw('Enemy', 3)">Add</button>
+        </div>
+      </div>
+
+      <h3>Selected Edges & Flaws</h3>
+      <div id="selected-edges-flaws" class="list-container">
+        <p style="color: var(--text-secondary);">None selected</p>
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="nextStep()">Continue to Final Touches →</button>
+    </div>
+  </div>
+
+  <!-- Step 7: Final Touches -->
+  <div class="step-content" id="step-7">
+    <div class="card">
+      <h2>Step 8: Final Touches</h2>
+
+      <div class="form-group">
+        <label>Character Name</label>
+        <input type="text" id="char-name" placeholder="Enter character name">
+      </div>
+
+      <div class="form-group">
+        <label>Street Name</label>
+        <input type="text" id="street-name" placeholder="Enter street name">
+      </div>
+
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="char-age" placeholder="Age" min="18" max="100">
+      </div>
+
+      <div class="form-group">
+        <label>Gender</label>
+        <input type="text" id="char-gender" placeholder="Gender">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="char-description" rows="4" placeholder="Physical description, personality, background..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Starting Karma Pool</label>
+        <div class="info-box">
+          Karma Pool is based on race and can be increased with Good Karma. Default values shown.
+        </div>
+        <input type="number" id="karma-pool" value="0" min="0" max="10">
+      </div>
+
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn" onclick="finalizeCharacter()">Generate Character Sheet →</button>
+    </div>
+  </div>
+
+  <!-- Step 8: Character Sheet -->
+  <div class="step-content" id="step-8">
+    <div class="character-sheet">
+      <h2 style="text-align: center; margin-bottom: 30px;">SHADOWRUN CHARACTER SHEET</h2>
+
+      <div class="sheet-section">
+        <h3>Personal Information</h3>
+        <div class="sheet-grid">
+          <div class="sheet-item">
+            <span class="sheet-label">Name:</span>
+            <span class="sheet-value" id="sheet-name">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Street Name:</span>
+            <span class="sheet-value" id="sheet-street-name">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Race:</span>
+            <span class="sheet-value" id="sheet-race">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Age:</span>
+            <span class="sheet-value" id="sheet-age">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Gender:</span>
+            <span class="sheet-value" id="sheet-gender">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Attributes</h3>
+        <div class="sheet-grid" id="sheet-attributes">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Derived Attributes</h3>
+        <div class="sheet-grid">
+          <div class="sheet-item">
+            <span class="sheet-label">Reaction:</span>
+            <span class="sheet-value" id="sheet-reaction">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Initiative:</span>
+            <span class="sheet-value" id="sheet-initiative">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Essence:</span>
+            <span class="sheet-value" id="sheet-essence">6.0</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Magic:</span>
+            <span class="sheet-value" id="sheet-magic">0</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Combat Pool:</span>
+            <span class="sheet-value" id="sheet-combat-pool">-</span>
+          </div>
+          <div class="sheet-item">
+            <span class="sheet-label">Karma Pool:</span>
+            <span class="sheet-value" id="sheet-karma-pool">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Skills</h3>
+        <div id="sheet-skills" class="list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Equipment</h3>
+        <div id="sheet-equipment" class="list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Edges & Flaws</h3>
+        <div id="sheet-edges-flaws" class="list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Contacts</h3>
+        <div id="sheet-contacts" class="list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <h3>Description</h3>
+        <p id="sheet-description" style="color: var(--text-secondary); line-height: 1.8;">-</p>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 30px;" class="no-print">
+        <button class="btn btn-secondary" onclick="prevStep()">← Back to Edit</button>
+        <button class="btn" onclick="window.print()">🖨️ Print Character Sheet</button>
+        <button class="btn" onclick="exportCharacter()">💾 Export as HTML</button>
+        <button class="btn" onclick="copyToClipboard()">📋 Copy Character Summary</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
 </body>
-
-</html>
