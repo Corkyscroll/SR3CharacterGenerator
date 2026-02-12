@@ -32,7 +32,7 @@ let character = {
   description: '',
   karmaPool: 0,
   essence: 6.0,
-  nuyen: 0
+  nuyen: 0,
 };
 
 // Copy character summary to clipboard
@@ -443,28 +443,17 @@ function calculateResources() {
   const nuyen = { A: 1000000, B: 400000, C: 90000, D: 20000, E: 5000 };
   character.nuyen = nuyen[resourcePriority] || 0;
 
-  // Magic priority
   const magicPriority = Object.keys(character.priorities).find(key => character.priorities[key] === 'magic');
   character.magicPriority = magicPriority;
 
-  // Auto-select mundane for low priorities
-  if (['C', 'D', 'E'].includes(magicPriority) && !character.magic) {
-    character.magic = 'mundane';
-    character.magicTradition = null;
-  }
-
-  // Auto-select human for Race Priority E
-  const racePriority = Object.keys(character.priorities).find(key => character.priorities[key] === 'race');
-  if (racePriority === 'E' && !character.race) {
-    character.race = 'human';
-    character.raceData = races.human;
-    character.karmaPool = races.human.karmaPool || 0;
-    for (let attr in races.human.attributes) {
-      character.attributes[attr] = races.human.attributes[attr][0];
-    }
-  }
+  // Debug output
+  console.log('Resources calculated:', {
+    attributePoints: character.attributePoints,
+    skillPoints: character.skillPoints,
+    nuyen: character.nuyen,
+    priorities: character.priorities
+  });
 }
-
 
 // Navigation
 function showStep(step) {
@@ -489,20 +478,20 @@ function showStep(step) {
 }
 
 function nextStep() {
-  // Validate current step before moving forward
+  // Don't validate on step 7 (it's handled by finalizeCharacter)
   if (currentStep === 7) {
-    // This will be handled by finalizeCharacter()
     return;
   }
-
-  // Update validation display
-  displayValidationSummary();
 
   if (currentStep < 8) {
     showStep(currentStep + 1);
   }
-}
 
+  // Update validation display AFTER moving to next step (non-blocking)
+  setTimeout(() => {
+    displayValidationSummary();
+  }, 100);
+}
 
 function prevStep() {
   if (currentStep > 0) {
@@ -729,6 +718,14 @@ function initSkillsStep() {
   const categories = ['combat', 'magical', 'physical', 'social', 'technical', 'vehicle', 'buildRepair'];
   const intelligence = character.attributes.intelligence || 1; //Default to 1 if not declared
 
+  // Update all automatic background knowledge skills
+  for (let skillName in character.skills) {
+    const skillData = character.skills[skillName];
+    if (skillData && skillData.rating > 0) {
+      updateAutoBackgroundKnowledge(skillName, skillData.rating);
+    }
+  }
+
   // Hide magical skills if character is mundane
   const magicalHeader = document.getElementById('magical-skills-header');
   const magicalList = document.getElementById('magical-skills');
@@ -826,41 +823,61 @@ function initSkillsStep() {
         header.textContent = cat;
         knowledgeContainer.appendChild(header);
 
-        // Add skills in this category
+        // Handle adding knowledge skills with category
         skillsInCategory.forEach(skill => {
           const skillData = character.knowledgeSkills[skill];
           const rating = typeof skillData === 'number' ? skillData : (skillData?.rating || 0);
           const category = typeof skillData === 'object' ? skillData.category : 'Interests';
+          const isAuto = skillData?.auto === true;
 
           const row = document.createElement('div');
           row.className = 'skill-row';
           row.setAttribute('data-skill', skill);
           row.setAttribute('data-skill-type', 'knowledge');
 
+          // If it's an auto skill, make it look different and disable controls
+          const autoStyle = isAuto ? 'opacity: 0.7; font-style: italic;' : '';
+          const autoLabel = isAuto ? ' <span style="font-size: 0.7em; color: var(--accent-secondary);">(Auto)</span>' : '';
+
           row.innerHTML = `
-            <span class="skill-row-name" title="${skill}">${skill}</span>
-            <span class="skill-row-attr" style="font-size: 0.7em;">${category}</span>
-            <div class="skill-rating-control">
-              <button class="skill-arrow-btn"
-                      onclick="changeKnowledgeSkill('${skill}', -1)"
-                      ${rating <= 0 ? 'disabled' : ''}>▼</button>
-              <span class="skill-rating-value">${rating}</span>
-              <button class="skill-arrow-btn"
-                      onclick="changeKnowledgeSkill('${skill}', 1)"
-                      ${rating >= 6 ? 'disabled' : ''}>▲</button>
-            </div>
-            <span class="skill-cost-display">${rating > 0 ? rating + 'p' : '-'}</span>
-            <button class="skill-spec-btn"
-                    onclick="removeKnowledgeSkill('${skill}')"
-                    title="Remove skill"
-                    style="background: var(--error, #ff4444);">✕</button>
-          `;
+    <span class="skill-row-name" title="${skill}" style="${autoStyle}">${skill}${autoLabel}</span>
+    <span class="skill-row-attr" style="font-size: 0.7em;">${category}</span>
+    <div class="skill-rating-control">
+      <button class="skill-arrow-btn skill-decrease" ${rating <= 0 || isAuto ? 'disabled' : ''}>▼</button>
+      <span class="skill-rating-value">${rating}</span>
+      <button class="skill-arrow-btn skill-increase" ${rating >= 6 || isAuto ? 'disabled' : ''}>▲</button>
+    </div>
+    <span class="skill-cost-display" style="${isAuto ? 'color: var(--accent-primary);' : ''}">${isAuto ? 'FREE' : (rating > 0 ? rating + 'p' : '-')}</span>
+    <button class="skill-spec-btn skill-remove"
+            title="${isAuto ? 'Cannot remove auto skill' : 'Remove skill'}"
+            style="background: var(--error, #ff4444);"
+            ${isAuto ? 'disabled' : ''}>✕</button>
+  `;
+
+          // Add event listeners
+          const decreaseBtn = row.querySelector('.skill-decrease');
+          const increaseBtn = row.querySelector('.skill-increase');
+          const removeBtn = row.querySelector('.skill-remove');
+
+          if (decreaseBtn) decreaseBtn.addEventListener('click', () => changeKnowledgeSkill(skill, -1));
+          if (increaseBtn) increaseBtn.addEventListener('click', () => changeKnowledgeSkill(skill, 1));
+          if (removeBtn) removeBtn.addEventListener('click', () => removeKnowledgeSkill(skill));
 
           knowledgeContainer.appendChild(row);
         });
       }
     });
   }
+    function removeKnowledgeSkill(skill) {
+      // Don't allow manual removal of auto-generated skills
+      if (isAutoBackgroundSkill(skill)) {
+        alert('This skill is automatically generated based on your active skills. Reduce the related skill rating to remove it.');
+        return;
+      }
+
+      delete character.knowledgeSkills[skill];
+      initSkillsStep();
+    }
 
   // Update knowledge points display
   const knowledgeUsed = calculateUsedKnowledgePoints();
@@ -885,23 +902,27 @@ function initSkillsStep() {
       row.setAttribute('data-skill-type', 'language');
 
       row.innerHTML = `
-        <span class="skill-row-name" title="${skill}">${skill}</span>
-        <span class="skill-row-attr">Int</span>
-        <div class="skill-rating-control">
-          <button class="skill-arrow-btn"
-                  onclick="changeLanguageSkill('${skill}', -1)"
-                  ${rating <= 0 ? 'disabled' : ''}>▼</button>
-          <span class="skill-rating-value">${rating}</span>
-          <button class="skill-arrow-btn"
-                  onclick="changeLanguageSkill('${skill}', 1)"
-                  ${rating >= 6 ? 'disabled' : ''}>▲</button>
-        </div>
-        <span class="skill-cost-display">${rating > 0 ? rating + 'p' : '-'}</span>
-        <button class="skill-spec-btn"
-                onclick="removeLanguageSkill('${skill}')"
-                title="Remove language"
-                style="background: var(--error, #ff4444);">✕</button>
-      `;
+    <span class="skill-row-name" title="${skill}">${skill}</span>
+    <span class="skill-row-attr">Int</span>
+    <div class="skill-rating-control">
+      <button class="skill-arrow-btn skill-decrease" ${rating <= 0 ? 'disabled' : ''}>▼</button>
+      <span class="skill-rating-value">${rating}</span>
+      <button class="skill-arrow-btn skill-increase" ${rating >= 6 ? 'disabled' : ''}>▲</button>
+    </div>
+    <span class="skill-cost-display">${rating > 0 ? rating + 'p' : '-'}</span>
+    <button class="skill-spec-btn skill-remove"
+            title="Remove language"
+            style="background: var(--error, #ff4444);">✕</button>
+  `;
+
+      // Add event listeners
+      const decreaseBtn = row.querySelector('.skill-decrease');
+      const increaseBtn = row.querySelector('.skill-increase');
+      const removeBtn = row.querySelector('.skill-remove');
+
+      if (decreaseBtn) decreaseBtn.addEventListener('click', () => changeLanguageSkill(skill, -1));
+      if (increaseBtn) increaseBtn.addEventListener('click', () => changeLanguageSkill(skill, 1));
+      if (removeBtn) removeBtn.addEventListener('click', () => removeLanguageSkill(skill));
 
       languageContainer.appendChild(row);
     }
@@ -960,12 +981,59 @@ function changeSkill(skill, delta) {
 
   if (newValue === 0) {
     delete character.skills[skill];
+    // Also remove the automatic background knowledge skill
+    removeAutoBackgroundKnowledge(skill);
   } else {
     character.skills[skill] = { rating: newValue, specialization: skillData.specialization || '' };
+    // Update automatic background knowledge skill (only for non-B/R skills)
+    updateAutoBackgroundKnowledge(skill, newValue);
   }
 
   initSkillsStep();
-  updateSkillPoints();
+}
+
+function isSkillBuildRepair(skillName) {
+  // Check if skill is from the buildRepair category
+  return skillsData.buildRepair.some(s => s.name === skillName);
+}
+
+function getBackgroundKnowledgeName(skillName) {
+  return `${skillName} (Background)`;
+}
+
+function updateAutoBackgroundKnowledge(skillName, skillRating) {
+  // Don't create background knowledge for B/R skills
+  if (isSkillBuildRepair(skillName)) {
+    return;
+  }
+
+  const backgroundRating = skillRating - 3;
+  const backgroundName = getBackgroundKnowledgeName(skillName);
+
+  if (backgroundRating > 0) {
+    // Create or update the background knowledge skill
+    character.knowledgeSkills[backgroundName] = {
+      rating: backgroundRating,
+      category: 'Background',
+      auto: true // Mark as automatically created
+    };
+  } else {
+    // Remove if rating would be 0 or less
+    if (character.knowledgeSkills[backgroundName]) {
+      delete character.knowledgeSkills[backgroundName];
+    }
+  }
+}
+
+function removeAutoBackgroundKnowledge(skillName) {
+  const backgroundName = getBackgroundKnowledgeName(skillName);
+  if (character.knowledgeSkills[backgroundName]?.auto) {
+    delete character.knowledgeSkills[backgroundName];
+  }
+}
+
+function isAutoBackgroundSkill(skillName) {
+  return character.knowledgeSkills[skillName]?.auto === true;
 }
 
 function toggleSpecialization(skillName) {
@@ -1131,6 +1199,11 @@ function addKnowledgeSkill() {
 }
 
 function changeKnowledgeSkill(skill, delta) {
+  // Prevent changing auto-generated skills
+  if (isAutoBackgroundSkill(skill)) {
+    return;
+  }
+
   const current = character.knowledgeSkills[skill];
   const currentRating = typeof current === 'number' ? current : (current?.rating || 0);
   const newValue = currentRating + delta;
@@ -1157,41 +1230,6 @@ function changeKnowledgeSkill(skill, delta) {
   }
 
   initSkillsStep();
-}
-
-function getLanguagePointBreakdown() {
-  const intelligence = character.attributes.intelligence || 1;
-  const languageMax = Math.floor(intelligence * 1.5);
-  const languageUsed = calculateUsedLanguagePoints();
-
-  const fromLanguagePool = Math.min(languageUsed, languageMax);
-  const fromKnowledgePool = Math.max(0, languageUsed - languageMax);
-
-  return {
-    languageMax,
-    languageUsed,
-    fromLanguagePool,
-    fromKnowledgePool,
-    languageRemaining: Math.max(0, languageMax - languageUsed)
-  };
-}
-
-function getKnowledgePointsAvailable() {
-  const intelligence = character.attributes.intelligence || 1;
-  const knowledgeMax = intelligence * 5;
-  const knowledgeUsed = calculateUsedKnowledgePoints();
-  const languageBreakdown = getLanguagePointBreakdown();
-
-  const knowledgeReserved = languageBreakdown.fromKnowledgePool;
-  const knowledgeAvailable = knowledgeMax - knowledgeUsed - knowledgeReserved;
-
-  return {
-    knowledgeMax,
-    knowledgeUsed,
-    knowledgeReserved,
-    knowledgeAvailable,
-    totalUsed: knowledgeUsed + knowledgeReserved
-  };
 }
 
 function addLanguageSkill() {
@@ -1229,25 +1267,6 @@ function removeLanguageSkill(skill) {
   initSkillsStep();
 }
 
-function calculateUsedKnowledgePoints() {
-  let used = 0;
-  for (let skill in character.knowledgeSkills) {
-    const skillData = character.knowledgeSkills[skill];
-    // Handle both old format (number) and new format (object)
-    const rating = typeof skillData === 'number' ? skillData : (skillData?.rating || 0);
-    used += rating;
-  }
-  return used;
-}
-
-function calculateUsedLanguagePoints() {
-  let used = 0;
-  for (let skill in character.languageSkills) {
-    used += character.languageSkills[skill];
-  }
-  return used;
-}
-
 function calculateUsedSkillPoints() {
   let used = 0;
   for (let skill in character.skills) {
@@ -1262,6 +1281,66 @@ function calculateUsedSkillPoints() {
     }
   }
   return used;
+}
+
+function calculateUsedKnowledgePoints() {
+  let used = 0;
+  for (let skill in character.knowledgeSkills) {
+    const skillData = character.knowledgeSkills[skill];
+
+    // Skip auto-generated background skills (they're free)
+    if (skillData?.auto === true) {
+      continue;
+    }
+
+    // Handle both old format (number) and new format (object)
+    const rating = typeof skillData === 'number' ? skillData : (skillData?.rating || 0);
+    used += rating;
+  }
+  return used;
+}
+
+function calculateUsedLanguagePoints() {
+  let used = 0;
+  for (let skill in character.languageSkills) {
+    used += character.languageSkills[skill] || 0;
+  }
+  return used;
+}
+
+function getLanguagePointBreakdown() {
+  const intelligence = character.attributes.intelligence || 1;
+  const languageMax = Math.floor(intelligence * 1.5);
+  const languageUsed = calculateUsedLanguagePoints();
+
+  const fromLanguagePool = Math.min(languageUsed, languageMax);
+  const fromKnowledgePool = Math.max(0, languageUsed - languageMax);
+
+  return {
+    languageMax,
+    languageUsed,
+    fromLanguagePool,
+    fromKnowledgePool,
+    languageRemaining: Math.max(0, languageMax - languageUsed)
+  };
+}
+
+function getKnowledgePointsAvailable() {
+  const intelligence = character.attributes.intelligence || 1;
+  const knowledgeMax = intelligence * 5;
+  const knowledgeUsed = calculateUsedKnowledgePoints();
+  const languageBreakdown = getLanguagePointBreakdown();
+
+  const knowledgeReserved = languageBreakdown.fromKnowledgePool;
+  const knowledgeAvailable = knowledgeMax - knowledgeUsed - knowledgeReserved;
+
+  return {
+    knowledgeMax,
+    knowledgeUsed,
+    knowledgeReserved,
+    knowledgeAvailable,
+    totalUsed: knowledgeUsed + knowledgeReserved
+  };
 }
 
 function updateSkillPoints() {
@@ -1931,16 +2010,6 @@ function validateRace() {
 
   // If Race Priority E, Human will be auto-selected, so don't show error if not yet visited
   if (racePriority === 'E') {
-    // Auto-select human if not already set
-    if (!character.race) {
-      character.race = 'human';
-      character.raceData = races.human;
-      character.karmaPool = races.human.karmaPool || 0;
-      // Set attributes to race minimums
-      for (let attr in races.human.attributes) {
-        character.attributes[attr] = races.human.attributes[attr][0];
-      }
-    }
     return; // No validation error for auto-selected human
   }
 
@@ -2080,7 +2149,6 @@ function validateAttributes() {
   }
 }
 
-
 function validateSkills() {
   const usedSkillPoints = calculateUsedSkillPoints();
   const maxSkillPoints = character.skillPoints || 0;
@@ -2126,8 +2194,8 @@ function validateSkills() {
     }
   }
 
-  // Check knowledge skills
-  const knowledgeUsed = calculateUsedKnowledgePoints();
+  // Check knowledge skills (excluding auto skills)
+  const knowledgeUsed = calculateUsedKnowledgePoints(); // Already excludes auto
   const knowledgeMax = character.attributes.intelligence * 5;
 
   // Check language skills with knowledge overflow
@@ -2144,11 +2212,17 @@ function validateSkills() {
 
   // Check for knowledge/language skills with invalid ratings
   for (let skill in character.knowledgeSkills) {
-    if (character.knowledgeSkills[skill] > 6 || character.knowledgeSkills[skill] < 0) {
+    const skillData = character.knowledgeSkills[skill];
+
+    // Skip validation for auto skills (they're calculated, not manually set)
+    if (skillData?.auto === true) continue;
+
+    const rating = typeof skillData === 'number' ? skillData : (skillData?.rating || 0);
+    if (rating > 6 || rating < 0) {
       validationErrors.push({
         step: 4,
         severity: 'error',
-        message: `Knowledge skill "${skill}" has invalid rating: ${character.knowledgeSkills[skill]}`
+        message: `Knowledge skill "${skill}" has invalid rating: ${rating}`
       });
     }
   }
@@ -2326,6 +2400,7 @@ function displayValidationSummary() {
 
 // Call this whenever character data changes
 function updateStepValidation() {
+  // This should only update UI indicators, not block anything
   const errors = validateCharacter();
 
   // Group errors by step
@@ -2349,7 +2424,7 @@ function updateStepValidation() {
       indicator.className = 'error-indicator';
       indicator.textContent = '!';
       indicator.style.cssText = `
-        background: var(--error);
+        background: var(--error, #ff4444);
         color: white;
         border-radius: 50%;
         width: 18px;
