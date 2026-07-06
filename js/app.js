@@ -33,6 +33,8 @@ let character = {
   karmaPool: 0,
   essence: 6.0,
   nuyen: 0,
+  lifestyle: null,
+  lifestyleCost: 0,
 };
 
 // Copy character summary to clipboard
@@ -1403,11 +1405,15 @@ function selectLifestyle() {
   if (value && lifestyles[value]) {
     character.lifestyle = value;
     character.lifestyleCost = lifestyles[value].cost;
-    descText.textContent = lifestyles[value].desc + ` (${lifestyles[value].cost.toLocaleString()}¥/month)`;
+    descText.textContent = `${lifestyles[value].desc} (${lifestyles[value].cost.toLocaleString()}¥/month)`;
     descDiv.style.display = 'block';
   } else {
     descDiv.style.display = 'none';
+    character.lifestyle = null;
+    character.lifestyleCost = 0;
   }
+
+  updateNuyenDisplay();
 }
 
 function initResourcesStep() {
@@ -1434,6 +1440,12 @@ function calculateSpentNuyen() {
   character.equipment.weapons.forEach(item => total += item.cost);
   character.equipment.armor.forEach(item => total += item.cost);
   character.equipment.equipment.forEach(item => total += item.cost);
+  character.equipment.vehicles.forEach(item => total += item.cost);
+
+  // Add lifestyle cost
+  if (character.lifestyleCost) {
+    total += character.lifestyleCost;
+  }
 
   return total;
 }
@@ -1447,6 +1459,19 @@ function addCyberware() {
     character.equipment.cyberware.push({ name, cost, essence });
     character.essence -= essence;
     updateResourcesList();
+    document.getElementById('essence-display').textContent = character.essence.toFixed(1);
+  }
+}
+
+function removeCyberware(index) {
+  const item = character.equipment.cyberware[index];
+  if (item) {
+    // Restore essence
+    character.essence += item.essence;
+    // Remove from array
+    character.equipment.cyberware.splice(index, 1);
+    updateResourcesList();
+    // Update essence display
     document.getElementById('essence-display').textContent = character.essence.toFixed(1);
   }
 }
@@ -1584,16 +1609,30 @@ function addEquipment() {
 
 function addVehicle() {
   const name = prompt('Vehicle name:');
-  const type = prompt('Vehicle type (bike, car, truck, etc.):');
-  const cost = parseInt(prompt('Cost in Nuyen:')) || 0;
-  const handling = parseInt(prompt('Handling rating:')) || 0;
-  const speed = parseInt(prompt('Speed rating:')) || 0;
-  const body = parseInt(prompt('Body rating:')) || 0;
-  const armor = parseInt(prompt('Armor rating:')) || 0;
+  const type = prompt('Vehicle type (e.g., Car, Bike, Helicopter):');
+  const cost = parseInt(prompt('Cost in Nuyen:'), 10) || 0;
+  const handling = prompt('Handling:');
+  const speed = prompt('Speed:');
+  const body = prompt('Body:');
+  const armor = prompt('Armor:');
+
   if (name) {
-    character.equipment.vehicles.push({ name, type, cost, handling, speed, body, armor });
+    character.equipment.vehicles.push({
+      name,
+      type,
+      cost,  // Make sure this is a number
+      handling,
+      speed,
+      body,
+      armor
+    });
     updateResourcesList();
   }
+}
+
+function removeVehicle(index) {
+  character.equipment.vehicles.splice(index, 1);
+  updateResourcesList();
 }
 
 function addContact() {
@@ -1609,64 +1648,70 @@ function addContact() {
 function updateResourcesList() {
   // Cyberware
   const cyberList = document.getElementById('cyberware-list');
-  cyberList.innerHTML = character.equipment.cyberware.length > 0
-    ? character.equipment.cyberware.map((item, i) => `
-                    <div class="list-item">
-                        <span>${item.name} (Essence: ${item.essence})</span>
-                        <span>${item.cost.toLocaleString()}¥</span>
-                        <button class="btn btn-secondary" onclick="removeItem('cyberware', ${i})" style="margin-left: 10px;">✕</button>
-                    </div>
-                `).join('')
-    : '<p style="color: var(--text-secondary); padding: 15px;">No cyberware added yet.</p>';
+  cyberList.innerHTML = '';
+  character.equipment.cyberware.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipment-item';
+    div.innerHTML = `
+      <span>${item.name} - ${item.cost.toLocaleString()}¥ (Essence: ${item.essence})</span>
+      <button class="btn btn-secondary" onclick="removeCyberware(${index})">Remove</button>
+    `;
+    cyberList.appendChild(div);
+  });
 
   // Weapons
   const weaponsList = document.getElementById('weapons-list');
-  weaponsList.innerHTML = character.equipment.weapons.length > 0
-    ? character.equipment.weapons.map((item, i) => `
-                    <div class="list-item">
-                        <span>${item.name}</span>
-                        <span>${item.cost.toLocaleString()}¥</span>
-                        <button class="btn btn-secondary" onclick="removeItem('weapons', ${i})" style="margin-left: 10px;">✕</button>
-                    </div>
-                `).join('')
-    : '<p style="color: var(--text-secondary); padding: 15px;">No weapons added yet.</p>';
+  weaponsList.innerHTML = '';
+  character.equipment.weapons.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipment-item';
+    div.innerHTML = `
+      <span>${item.name} - ${item.cost.toLocaleString()}¥</span>
+      <button class="btn btn-secondary" onclick="removeWeapon(${index})">Remove</button>
+    `;
+    weaponsList.appendChild(div);
+  });
 
   // Armor
   const armorList = document.getElementById('armor-list');
-  armorList.innerHTML = character.equipment.armor.length > 0
-    ? character.equipment.armor.map((item, i) => `
-                    <div class="list-item">
-                        <span>${item.name} (Rating: ${item.rating})</span>
-                        <span>${item.cost.toLocaleString()}¥</span>
-                        <button class="btn btn-secondary" onclick="removeItem('armor', ${i})" style="margin-left: 10px;">✕</button>
-                    </div>
-                `).join('')
-    : '<p style="color: var(--text-secondary); padding: 15px;">No armor added yet.</p>';
+  armorList.innerHTML = '';
+  character.equipment.armor.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipment-item';
+    div.innerHTML = `
+      <span>${item.name} - ${item.cost.toLocaleString()}¥ (Rating: ${item.rating})</span>
+      <button class="btn btn-secondary" onclick="removeArmor(${index})">Remove</button>
+    `;
+    armorList.appendChild(div);
+  });
 
-  // Equipment
-  const equipList = document.getElementById('equipment-list');
-  equipList.innerHTML = character.equipment.equipment.length > 0
-    ? character.equipment.equipment.map((item, i) => `
-                    <div class="list-item">
-                        <span>${item.name}</span>
-                        <span>${item.cost.toLocaleString()}¥</span>
-                        <button class="btn btn-secondary" onclick="removeItem('equipment', ${i})" style="margin-left: 10px;">✕</button>
-                    </div>
-                `).join('')
-    : '<p style="color: var(--text-secondary); padding: 15px;">No equipment added yet.</p>';
+  // General Equipment
+  const equipList = document.getElementById('general-equipment-list');
+  equipList.innerHTML = '';
+  character.equipment.equipment.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipment-item';
+    div.innerHTML = `
+      <span>${item.name} - ${item.cost.toLocaleString()}¥</span>
+      <button class="btn btn-secondary" onclick="removeEquipment(${index})">Remove</button>
+    `;
+    equipList.appendChild(div);
+  });
 
   // Vehicles
   const vehiclesList = document.getElementById('vehicles-list');
-  vehiclesList.innerHTML = character.equipment.vehicles.length > 0
-    ? character.equipment.vehicles.map((item, i) => `
-                    <div class="list-item">
-                        <span>${item.name} (${item.type}) - Handling: ${item.handling}, Speed: ${item.speed}, Body: ${item.body}, Armor: ${item.armor}</span>
-                        <span>${item.cost.toLocaleString()}¥</span>
-                        <button class="btn btn-secondary" onclick="removeItem('vehicles', ${i})" style="margin-left: 10px;">✕</button>
-                    </div>
-                `).join('')
-    : '<p style="color: var(--text-secondary); padding: 15px;">No vehicles added yet.</p>';
+  vehiclesList.innerHTML = '';
+  character.equipment.vehicles.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipment-item';
+    div.innerHTML = `
+      <span>${item.name} (${item.type}) - ${item.cost.toLocaleString()}¥</span>
+      <button class="btn btn-secondary" onclick="removeVehicle(${index})">Remove</button>
+    `;
+    vehiclesList.appendChild(div);
+  });
 
+  // Update nuyen display after any change
   updateNuyenDisplay();
 }
 
