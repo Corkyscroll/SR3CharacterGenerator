@@ -232,6 +232,25 @@ function generateExportHTML() {
 
 </html>`;
 }
+
+function exportCharacterHTML() {
+  const html = generateExportHTML();
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${(character.streetName || character.name || 'shadowrun-character')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')}.html`;
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
+
 const races = {
   human: {
     name: 'Human',
@@ -262,7 +281,7 @@ const races = {
     priority: 'D',
     attributes: { body: [3, 9], quickness: [0, 6], strength: [2, 8], charisma: [-1, 5], intelligence: [-1, 5], willpower: [0, 6] },
     modifiers: { body: +3, quickness: 0, strength: +2, charisma: -1, intelligence: -1, willpower: 0 },
-    description: 'Powerful and intimidating, orks trade social grace for raw might. +3 Body, +2 Strength, -1 Charisma, -1 Intelligence.',
+    description: 'Powerful and intimidating, Orks trade social grace for raw might. +3 Body, +2 Strength, -1 Charisma, -1 Intelligence.',
     karmaPool: 1
   },
   troll: {
@@ -444,10 +463,10 @@ function calculateResources() {
   const resourcePriority = Object.keys(character.priorities).find(key => character.priorities[key] === 'resources');
   const nuyen = { A: 1000000, B: 400000, C: 90000, D: 20000, E: 5000 };
   character.nuyen = nuyen[resourcePriority] || 0;
-
+/*
   const magicPriority = Object.keys(character.priorities).find(key => character.priorities[key] === 'magic');
   character.magicPriority = magicPriority;
-
+*/
   // Debug output
   console.log('Resources calculated:', {
     attributePoints: character.attributePoints,
@@ -710,7 +729,7 @@ function updateDerivedStats() {
   const reaction = Math.floor((character.attributes.quickness + character.attributes.intelligence) / 2);
   const initiative = reaction + '+1d6';
 
-  document.getElementById('reaction-display').textContent = reaction;
+  document.getElementById('reaction-display').textContent = reaction.toString();
   document.getElementById('initiative-display').textContent = initiative;
   document.getElementById('essence-display').textContent = character.essence.toFixed(1);
 }
@@ -1479,7 +1498,7 @@ function removeCyberware(index) {
 function addQuickCyberware() {
   const cyberwareOptions = [
     { name: 'Smartlink', cost: 3000, essence: 0.2 },
-    { name: 'Cybereyes (Basic)', cost: 3000, essence: 0.2 },
+    { name: 'Cyber-eyes (Basic)', cost: 3000, essence: 0.2 },
     { name: 'Datajack', cost: 1000, essence: 0.2 },
     { name: 'Wired Reflexes Level 1', cost: 38000, essence: 2.0 },
     { name: 'Muscle Replacement Level 1', cost: 35000, essence: 1.0 },
@@ -2356,7 +2375,7 @@ function validateResources() {
   }
 
   // Validate cyberware essence costs
-  character.equipment.cyberware.forEach((cyber, i) => {
+  character.equipment.cyberware.forEach((cyber) => {
     if (!cyber.essence || cyber.essence < 0) {
       validationErrors.push({
         step: 5,
