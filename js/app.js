@@ -1557,6 +1557,11 @@ function addQuickWeapon() {
   }
 }
 
+function removeWeapon(index) {
+  character.equipment.weapons.splice(index, 1);
+  updateResourcesList();
+}
+
 function addArmor() {
   const name = prompt('Armor name:');
   const cost = parseInt(prompt('Cost in Nuyen:')) || 0;
@@ -1598,6 +1603,11 @@ function addQuickArmor() {
   }
 }
 
+function removeArmor(index) {
+  character.equipment.armor.splice(index, 1);
+  updateResourcesList();
+}
+
 function addEquipment() {
   const name = prompt('Equipment name:');
   const cost = parseInt(prompt('Cost in Nuyen:')) || 0;
@@ -1605,6 +1615,11 @@ function addEquipment() {
     character.equipment.equipment.push({ name, cost });
     updateResourcesList();
   }
+}
+
+function removeEquipment(index) {
+  character.equipment.equipment.splice(index, 1);
+  updateResourcesList();
 }
 
 function promptNumber(message, defaultValue = 0) {
@@ -1758,11 +1773,6 @@ function updateContactsList() {
                     </div>
                 `).join('')
     : '<p style="color: var(--text-secondary); padding: 15px;">No contacts added yet.</p>';
-}
-
-function removeItem(category, index) {
-  character.equipment[category].splice(index, 1);
-  updateResourcesList();
 }
 
 function removeContact(index) {
