@@ -1620,16 +1620,20 @@ function addVehicle() {
   if (!name || !name.trim()) return;
 
   const type = prompt('Vehicle type (e.g., Car, Bike, Helicopter):') || '';
+  const cost = promptNumber('Cost in Nuyen:');
   const handling = prompt('Handling (e.g., 3/5):') || '';
+  const speed = promptNumber('Speed:');
+  const body = promptNumber('Body:');
+  const armor = promptNumber('Armor:');
 
-  character.equipment.vehicle.push({
+  character.equipment.vehicles.push({
     name: name.trim(),
     type: type.trim(),
+    cost,
     handling: handling.trim(),
-    cost: promptNumber('Cost in Nuyen:'),
-    speed: promptNumber('Speed:'),
-    body: promptNumber('Body:'),
-    armor: promptNumber('Armor:'),
+    speed,
+    body,
+    armor,
   });
     updateResourcesList();
 }
@@ -1704,23 +1708,38 @@ function updateResourcesList() {
 
   // Vehicles
   const vehiclesList = document.getElementById('vehicles-list');
-  if(vehiclesList) {
+  if (vehiclesList) {
     vehiclesList.innerHTML = '';
 
+    console.log('vehicles render input:', character.equipment.vehicles);
+    console.log('vehiclesList element:', vehiclesList);
     character.equipment.vehicles.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.className = 'equipment-item';
-      div.innerHTML = `
-      <span>
-        ${item.name}${item.type ? ` (${item.type})` : ''} - ${item.cost.toLocaleString()}¥
-        ${item.handling ? ` | Handling: ${item.handling}` : ''}
-        | Speed: ${item.speed}
-        | Body: ${item.body}
-        | Armor: ${item.armor}
-      </span>
-      <button class="btn btn-secondary" onclick="removeVehicle(${index})">Remove</button>
-    `;
-      vehiclesList.appendChild(div);
+      console.log('rendering vehicle:', item);
+      try {
+        const div = document.createElement('div');
+        div.className = 'equipment-item';
+
+        const cost = Number(item.cost) || 0;
+        const speed = Number(item.speed) || 0;
+        const body = Number(item.body) || 0;
+        const armor = Number(item.armor) || 0;
+        const handling = item.handling ? String(item.handling).trim() : '';
+
+        div.innerHTML = `
+        <span>
+          ${item.name || 'Unnamed Vehicle'}${item.type ? ` (${item.type})` : ''} - ${cost.toLocaleString()}¥
+          ${handling ? ` | Handling: ${handling}` : ''}
+          | Speed: ${speed}
+          | Body: ${body}
+          | Armor: ${armor}
+        </span>
+        <button class="btn btn-secondary" onclick="removeVehicle(${index})">Remove</button>
+      `;
+
+        vehiclesList.appendChild(div);
+      } catch (err) {
+        console.error('Vehicle render failed:', item, err);
+      }
     });
   }
 
