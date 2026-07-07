@@ -1436,11 +1436,11 @@ function calculateSpentNuyen() {
   let total = 0;
 
   // Sum all equipment costs
-  character.equipment.cyberware.forEach(item => total += item.cost);
-  character.equipment.weapons.forEach(item => total += item.cost);
-  character.equipment.armor.forEach(item => total += item.cost);
-  character.equipment.equipment.forEach(item => total += item.cost);
-  character.equipment.vehicles.forEach(item => total += item.cost);
+  character.equipment.cyberware.forEach(item => {total += item.cost || 0});
+  character.equipment.weapons.forEach(item => {total += item.cost || 0});
+  character.equipment.armor.forEach(item => {total += item.cost || 0});
+  character.equipment.equipment.forEach(item => {total += item.cost || 0});
+  character.equipment.vehicles.forEach(item => {total += item.cost || 0});
 
   // Add lifestyle cost
   if (character.lifestyleCost) {
@@ -1607,27 +1607,31 @@ function addEquipment() {
   }
 }
 
+function promptNumber(message, defaultValue = 0) {
+  const value = prompt(message);
+  if (value === null || value.trim() === '') return defaultValue;
+
+  const num = Number(value);
+  return Number.isNaN(num) ? defaultValue : num;
+}
+
 function addVehicle() {
   const name = prompt('Vehicle name:');
-  const type = prompt('Vehicle type (e.g., Car, Bike, Helicopter):');
-  const cost = parseInt(prompt('Cost in Nuyen:'), 10) || 0;
-  const handling = prompt('Handling:');
-  const speed = prompt('Speed:');
-  const body = prompt('Body:');
-  const armor = prompt('Armor:');
+  if (!name || !name.trim()) return;
 
-  if (name) {
-    character.equipment.vehicles.push({
-      name,
-      type,
-      cost,  // Make sure this is a number
-      handling,
-      speed,
-      body,
-      armor
-    });
+  const type = prompt('Vehicle type (e.g., Car, Bike, Helicopter):') || '';
+  const handling = prompt('Handling (e.g., 3/5):') || '';
+
+  character.equipment.vehicle.push({
+    name: name.trim(),
+    type: type.trim(),
+    handling: handling.trim(),
+    cost: promptNumber('Cost in Nuyen:'),
+    speed: promptNumber('Speed:'),
+    body: promptNumber('Body:'),
+    armor: promptNumber('Armor:'),
+  });
     updateResourcesList();
-  }
 }
 
 function removeVehicle(index) {
@@ -1700,16 +1704,25 @@ function updateResourcesList() {
 
   // Vehicles
   const vehiclesList = document.getElementById('vehicles-list');
-  vehiclesList.innerHTML = '';
-  character.equipment.vehicles.forEach((item, index) => {
-    const div = document.createElement('div');
-    div.className = 'equipment-item';
-    div.innerHTML = `
-      <span>${item.name} (${item.type}) - ${item.cost.toLocaleString()}¥</span>
+  if(vehiclesList) {
+    vehiclesList.innerHTML = '';
+
+    character.equipment.vehicles.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'equipment-item';
+      div.innerHTML = `
+      <span>
+        ${item.name}${item.type ? ` (${item.type})` : ''} - ${item.cost.toLocaleString()}¥
+        ${item.handling ? ` | Handling: ${item.handling}` : ''}
+        | Speed: ${item.speed}
+        | Body: ${item.body}
+        | Armor: ${item.armor}
+      </span>
       <button class="btn btn-secondary" onclick="removeVehicle(${index})">Remove</button>
     `;
-    vehiclesList.appendChild(div);
-  });
+      vehiclesList.appendChild(div);
+    });
+  }
 
   // Update nuyen display after any change
   updateNuyenDisplay();
